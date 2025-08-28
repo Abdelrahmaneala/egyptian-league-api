@@ -1,11 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const matchController = require("../controllers/matchController");
+const { createMatch, getMatches } = require("../controllers/matchController");
+const { protect, restrictTo } = require("../middleware/authMiddleware");
 
-router.post("/", matchController.createMatch);
-router.get("/", matchController.getMatches);
-router.get("/:id", matchController.getMatch);
-router.put("/:id", matchController.updateMatch);
-router.delete("/:id", matchController.deleteMatch);
+router.post("/", protect, restrictTo("admin"), createMatch);
+router.get("/", getMatches);
 
 module.exports = router;
