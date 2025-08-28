@@ -143,10 +143,4 @@ A full walkthrough video (5–6 minutes) has been recorded to explain:
 
 ---
 
-## ✨ Evaluation
-- ✅ Task 5: User model, Signup, Login with JWT (20 points).  
-- ✅ Task 6: File upload with Multer, update Team model, README, Video (20 points).  
-
-**Total: 40/40 ✅**
-
 ---
