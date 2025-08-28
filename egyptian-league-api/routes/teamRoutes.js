@@ -5,19 +5,17 @@ const Team = require("../models/Team");
 
 const router = express.Router();
 
-// إعداد مكان التخزين
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "uploads/"); // الصور تتحفظ في فولدر uploads
+    cb(null, "uploads/"); 
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname)); // اسم فريد للصورة
+    cb(null, Date.now() + path.extname(file.originalname)); 
   }
 });
 
 const upload = multer({ storage: storage });
 
-// إنشاء فريق جديد
 router.post("/", async (req, res) => {
   try {
     const { name, city, stadium } = req.body;
@@ -29,7 +27,6 @@ router.post("/", async (req, res) => {
   }
 });
 
-// رفع لوجو لفريق
 router.post("/:id/logo", upload.single("logo"), async (req, res) => {
   try {
     const team = await Team.findById(req.params.id);
@@ -50,7 +47,6 @@ router.post("/:id/logo", upload.single("logo"), async (req, res) => {
   }
 });
 
-// عرض كل الفرق
 router.get("/", async (req, res) => {
   try {
     const teams = await Team.find();
