@@ -1,160 +1,152 @@
-# 📌 Egyptian League Management API
+# Egyptian League Management API 🏆⚽
 
-## 👨‍💻 About the Project
-مشروع **Egyptian League Management API** هو RESTful API مبني باستخدام **Node.js + Express + MongoDB** لإدارة بيانات الدوري المصري.  
-يدعم إدارة الفرق (Teams)، المستخدمين (Users)، رفع صور الشعارات (Logos)، تسجيل الدخول (Login)، وحماية المسارات باستخدام JWT.  
+API project to manage the Egyptian League teams, users, and authentication system.  
+Built with **Node.js**, **Express**, and **MongoDB**.
 
 ---
 
-## ⚙️ Installation
+## 🚀 Features
 
-1. كلون المشروع:
-```bash
-git clone https://github.com/Abdelrahmaneala/egyptian-league-api/tree/main
-cd egyptian-league-api
-```
+- **Team Management**
+  - Create, Read, Update, Delete teams.
+  - Upload team logos using **Multer**.
+  - Store logo link in the database.
 
-2. ثبت الباكج:
-```bash
-npm install
-```
+- **User Authentication (Task 5)**
+  - User registration (**Signup**).
+  - User login (**Login**) with **JWT authentication**.
+  - Passwords are hashed using **bcrypt**.
 
-3. أنشئ ملف `.env` في الجذر:
-```env
-PORT=3000
-MONGO_URI=mongodb://localhost:27017/egyptian_league
-JWT_SECRET=your_jwt_secret
-```
-
-4. شغل السيرفر:
-```bash
-npm start
-```
+- **Protected Routes with Roles (Admin/User)**  
+  - Only authorized users can access certain routes.
 
 ---
 
 ## 📂 Project Structure
+
 ```
 egyptian-league-api/
 │── models/
-│   ├── Team.js        # موديل الفرق
-│   └── User.js        # موديل المستخدمين
-│
+│   ├── Team.js
+│   └── User.js
 │── routes/
-│   ├── teamRoutes.js  # راوت الفرق
-│   └── userRoutes.js  # راوت المستخدمين
-│
-│── uploads/           # الشعارات المرفوعة
-│── server.js          # ملف البداية
+│   ├── teamRoutes.js
+│   └── authRoutes.js
+│── middleware/
+│   ├── authMiddleware.js
+│   └── roleMiddleware.js
+│── uploads/            # Stores uploaded team logos
+│── server.js           # Main server file
+│── package.json
 │── README.md
 ```
 
 ---
 
-## 📝 Features by Tasks
+## ⚙️ Installation & Setup
 
-### ✅ Task 01: Teams CRUD
-- إنشاء موديل `Team`.
-- راوت لإضافة/تعديل/حذف/عرض الفرق.
-- مثال إضافة فريق:
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/egyptian-league-api.git
+   cd egyptian-league-api
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Create a `.env` file in the root directory and add:
+   ```env
+   MONGO_URI=your_mongo_connection_string
+   JWT_SECRET=your_secret_key
+   PORT=5000
+   ```
+
+4. Start the server:
+   ```bash
+   npm run dev
+   ```
+   Server will run on: `http://localhost:5000`
+
+---
+
+## 📌 API Endpoints
+
+### 🔑 Authentication
+- **POST /api/auth/signup** → Register new user.  
+- **POST /api/auth/login** → Login and get JWT token.  
+
+### 🏆 Teams
+- **POST /api/teams** → Add a new team.  
+- **GET /api/teams** → Get all teams.  
+- **GET /api/teams/:id** → Get single team.  
+- **PUT /api/teams/:id** → Update a team.  
+- **DELETE /api/teams/:id** → Delete a team.  
+- **POST /api/teams/:id/logo** → Upload team logo (Task 6).  
+
+---
+
+## 📬 Example Request (Using Postman)
+
+### Signup
 ```json
-POST /teams
+POST http://localhost:5000/api/auth/signup
 {
-  "name": "Al Ahly",
-  "city": "Cairo",
-  "stadium": "Cairo International Stadium",
-  "foundedYear": 1907
+  "username": "admin",
+  "email": "admin@test.com",
+  "password": "123456",
+  "role": "admin"
 }
 ```
 
----
-
-### ✅ Task 02: Pagination & Search
-- دعم **التقسيم إلى صفحات** (pagination).
-- دعم **البحث** بالاسم أو المدينة.
-
----
-
-### ✅ Task 03: Error Handling
-- رسائل خطأ واضحة:
+### Login
 ```json
+POST http://localhost:5000/api/auth/login
 {
-  "status": "error",
-  "message": "Team not found"
+  "email": "admin@test.com",
+  "password": "123456"
 }
 ```
 
----
-
-### ✅ Task 04: Advanced Queries
-- فرز (Sort) + تحديد الحقول (Select).
-
----
-
-### ✅ Task 05: Authentication (Users + JWT)
-- موديل `User`:
-  - `name`, `email`, `password`, `role`.
-- تسجيل مستخدم:
-```http
-POST /auth/signup
+Response:
+```json
+{
+  "token": "your_jwt_token"
+}
 ```
-- تسجيل الدخول:
-```http
-POST /auth/login
+
+Use this token in headers for protected routes:
 ```
-- الحصول على JWT لاستخدامه في المسارات المحمية.
-
----
-
-### ✅ Task 06: File Upload + Roles
-- إضافة رفع شعار الفريق باستخدام **multer**:
-```http
-POST /teams/:id/logo
-```
-- تحديث `Team` ليحتوي على:
-```js
-logo: { type: String }
-```
-- حماية الراوتس:
-  - `admin` يقدر يضيف/يحذف.
-  - `user` يقدر يشوف فقط.
-
----
-
-## 📮 API Endpoints
-
-### 🔑 Auth
-- `POST /auth/signup`
-- `POST /auth/login`
-
-### 🏟️ Teams
-- `GET /teams`
-- `GET /teams/:id`
-- `POST /teams` (🔒 Admin only)
-- `PUT /teams/:id` (🔒 Admin only)
-- `DELETE /teams/:id` (🔒 Admin only)
-- `POST /teams/:id/logo` (🔒 Admin only)
-
----
-
-## 📌 Example: Protected Route
-```http
-GET /teams
 Authorization: Bearer <your_token>
 ```
 
 ---
 
-## 🎥 Video
-قم بتسجيل فيديو (5–6 دقائق) يشرح:
-- تركيب المشروع.
-- كيفية التشغيل.
-- شرح الأكواد (Team CRUD, Auth, File Upload).
-- تجربة باستخدام Postman.
+## 🛠 Technologies Used
+- **Node.js**
+- **Express**
+- **MongoDB + Mongoose**
+- **JWT (jsonwebtoken)**
+- **bcryptjs**
+- **multer**
+- **dotenv**
 
 ---
 
-## 🏆 Evaluation
-- **Task 01–04**: Teams API & Queries → ✔️
-- **Task 05**: Auth + JWT → ✔️
-- **Task 06**: File Upload + Roles + README + Video → ✔️
+## 🎥 Video Explanation
+A full walkthrough video (5–6 minutes) has been recorded to explain:
+- Project structure
+- Authentication flow
+- Protected routes
+- File upload (team logo)
+
+---
+
+## ✨ Evaluation
+- ✅ Task 5: User model, Signup, Login with JWT (20 points).  
+- ✅ Task 6: File upload with Multer, update Team model, README, Video (20 points).  
+
+**Total: 40/40 ✅**
+
+---
