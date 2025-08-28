@@ -8,134 +8,123 @@ const path = require("path");
 
 dotenv.config();
 const app = express();
-
-// Middleware
 app.use(express.json());
-app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // serve uploaded images
 
-// ================== MongoDB Connection ==================
 mongoose
-  .connect("mongodb://127.0.0.1:27017/egyptian-league")
-  .then(() => console.log("✅ MongoDB Connected"))
-  .catch((err) => console.error("❌ MongoDB Error:", err));
+  .connect("mongodb://127.0.0.1:27017/egyptian_league")
+  .then(() => console.log("✅ Connected to MongoDB"))
+  .catch((err) => console.error("❌ DB Connection Error:", err));
 
-// ================== MODELS ==================
+const userSchema = new mongoose.Schema({
+  username: { type: String, required: true, unique: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  role: { type: String, enum: ["user", "admin"], default: "user" },
+});
+
+const User = mongoose.model("User", userSchema);
+
 const teamSchema = new mongoose.Schema({
   name: { type: String, required: true },
   city: String,
   stadium: String,
   foundedYear: Number,
-  logo: String, // ✅ new field for team logo
+  logo: { type: String }, 
 });
+
 const Team = mongoose.model("Team", teamSchema);
 
-const userSchema = new mongoose.Schema({
-  username: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  role: { type: String, enum: ["admin", "user"], default: "user" },
-});
-const User = mongoose.model("User", userSchema);
+function authMiddleware(req, res, next) {
+  const token = req.headers["authorization"];
+  if (!token) return res.status(401).json({ message: "Access Denied, No Token" });
 
-// ================== JWT Middleware ==================
-const authMiddleware = (roles = []) => {
+  try {
+    const verified = jwt.verify(token.split(" ")[1], process.env.JWT_SECRET || "secretkey");
+    req.user = verified;
+    next();
+  } catch (err) {
+    res.status(400).json({ message: "Invalid Token" });
+  }
+}
+
+function authorizeRoles(...roles) {
   return (req, res, next) => {
-    const token = req.headers["authorization"]?.split(" ")[1];
-    if (!token) return res.status(401).json({ message: "Access Denied" });
-
-    try {
-      const verified = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = verified;
-
-      if (roles.length && !roles.includes(req.user.role)) {
-        return res.status(403).json({ message: "Forbidden: insufficient role" });
-      }
-
-      next();
-    } catch (err) {
-      res.status(400).json({ message: "Invalid Token" });
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({ message: "You are not allowed to access this route" });
     }
+    next();
   };
-};
+}
 
-// ================== MULTER (File Upload) ==================
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
-  },
+  destination: "./uploads/",
   filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname));
   },
 });
-const upload = multer({ storage });
+const upload = multer({ storage: storage });
+app.use("/uploads", express.static("uploads"));
 
-// ================== AUTH ROUTES ==================
 
-// Signup
 app.post("/auth/signup", async (req, res) => {
   try {
-    const { username, password, role } = req.body;
+    const { username, email, password, role } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ username, password: hashedPassword, role });
-    await newUser.save();
-    res.json({ status: "success", message: "User created successfully" });
+
+    const user = new User({ username, email, password: hashedPassword, role });
+    await user.save();
+
+    res.json({ status: "success", message: "User registered successfully" });
   } catch (err) {
-    res.status(500).json({ status: "error", message: "Signup failed" });
+    res.status(500).json({ status: "error", message: err.message });
   }
 });
 
-// Login
 app.post("/auth/login", async (req, res) => {
   try {
-    const { username, password } = req.body;
-    const user = await User.findOne({ username });
-    if (!user) return res.status(400).json({ message: "Invalid credentials" });
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ message: "User not found" });
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
+    const validPass = await bcrypt.compare(password, user.password);
+    if (!validPass) return res.status(400).json({ message: "Invalid Password" });
 
     const token = jwt.sign(
-      { id: user._id, role: user.role },
-      process.env.JWT_SECRET,
+      { _id: user._id, role: user.role },
+      process.env.JWT_SECRET || "secretkey",
       { expiresIn: "1h" }
     );
 
     res.json({ status: "success", token });
   } catch (err) {
-    res.status(500).json({ status: "error", message: "Login failed" });
+    res.status(500).json({ status: "error", message: err.message });
   }
 });
 
-// ================== TEAM ROUTES ==================
 
-// Get all teams (public)
 app.get("/teams", async (req, res) => {
+  const teams = await Team.find();
+  res.json({
+    status: "success",
+    data: { teams, total: teams.length, page: 1, totalPages: 1 },
+    message: "تمت العملية بنجاح",
+  });
+});
+
+app.post("/teams", authMiddleware, authorizeRoles("admin"), async (req, res) => {
   try {
-    const teams = await Team.find();
-    res.json({
-      status: "success",
-      data: { teams, total: teams.length, page: 1, totalPages: 1 },
-      message: "تمت العملية بنجاح",
-    });
+    const team = new Team(req.body);
+    await team.save();
+    res.json({ status: "success", data: team, message: "Team created" });
   } catch (err) {
-    res.status(500).json({ status: "error", message: "Internal Server Error" });
+    res.status(500).json({ status: "error", message: err.message });
   }
 });
 
-// Add new team (Admin only)
-app.post("/teams", authMiddleware(["admin"]), async (req, res) => {
-  try {
-    const newTeam = new Team(req.body);
-    await newTeam.save();
-    res.json({ status: "success", data: newTeam, message: "Team created" });
-  } catch (err) {
-    res.status(500).json({ status: "error", message: "Failed to create team" });
-  }
-});
-
-// Upload team logo (Admin only)
 app.post(
   "/teams/:id/logo",
-  authMiddleware(["admin"]),
+  authMiddleware,
+  authorizeRoles("admin"),
   upload.single("logo"),
   async (req, res) => {
     try {
@@ -145,17 +134,12 @@ app.post(
       team.logo = `/uploads/${req.file.filename}`;
       await team.save();
 
-      res.json({
-        status: "success",
-        data: team,
-        message: "Logo uploaded successfully",
-      });
+      res.json({ status: "success", data: team, message: "Logo uploaded" });
     } catch (err) {
-      res.status(500).json({ status: "error", message: "Upload failed" });
+      res.status(500).json({ status: "error", message: err.message });
     }
   }
 );
 
-// ================== SERVER START ==================
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
