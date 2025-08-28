@@ -141,6 +141,4 @@ A full walkthrough video (5–6 minutes) has been recorded to explain:
 - Protected routes
 - File upload (team logo)
 
----
 
----
