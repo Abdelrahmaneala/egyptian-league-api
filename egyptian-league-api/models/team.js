@@ -15,7 +15,7 @@ const teamSchema = new mongoose.Schema({
   },
   logo: {
     type: String,
-    default: "" // رابط اللوجو
+    default: ""
   }
 });
 
