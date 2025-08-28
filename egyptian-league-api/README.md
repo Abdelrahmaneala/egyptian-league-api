@@ -10,7 +10,7 @@
 
 1. كلون المشروع:
 ```bash
-git clone [<repo-url>](https://github.com/Abdelrahmaneala/egyptian-league-api/tree/main)
+git clone https://github.com/Abdelrahmaneala/egyptian-league-api/tree/main
 cd egyptian-league-api
 ```
 
