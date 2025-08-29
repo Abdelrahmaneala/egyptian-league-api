@@ -1,144 +1,42 @@
-# Egyptian League Management API 🏆⚽
+# Egyptian League Management API
 
-API project to manage the Egyptian League teams, users, and authentication system.  
-Built with **Node.js**, **Express**, and **MongoDB**.
+RESTful API to manage Egyptian League football teams and matches.
 
----
+## Features
 
-## 🚀 Features
+- CRUD operations for Teams (Create, Read, Update, Delete)
+- Upload team logos
+- CRUD operations for Matches
+- User authentication (Register & Login) using JWT
+- Pagination for Teams and Matches
+- All responses in JSend format
+- Proper error handling
 
-- **Team Management**
-  - Create, Read, Update, Delete teams.
-  - Upload team logos using **Multer**.
-  - Store logo link in the database.
+## Tech Stack
 
-- **User Authentication (Task 5)**
-  - User registration (**Signup**).
-  - User login (**Login**) with **JWT authentication**.
-  - Passwords are hashed using **bcrypt**.
+Node.js, Express, MongoDB, Mongoose, JWT, Multer, CORS
 
-- **Protected Routes with Roles (Admin/User)**  
-  - Only authorized users can access certain routes.
+## Installation
 
----
-
-## 📂 Project Structure
-
-```
-egyptian-league-api/
-│── models/
-│   ├── Team.js
-│   └── User.js
-│── routes/
-│   ├── teamRoutes.js
-│   └── authRoutes.js
-│── middleware/
-│   ├── authMiddleware.js
-│   └── roleMiddleware.js
-│── uploads/            # Stores uploaded team logos
-│── server.js           # Main server file
-│── package.json
-│── README.md
-```
-
----
-
-## ⚙️ Installation & Setup
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/Abdelrahmaneala/egyptian-league-api/tree/main
-   cd egyptian-league-api
-   ```
-
+1. Clone repository:
+   git clone <repo-url>
 2. Install dependencies:
-   ```bash
    npm install
-   ```
-
-3. Create a `.env` file in the root directory and add:
-   ```env
-   MONGO_URI=your_mongo_connection_string
-   JWT_SECRET=your_secret_key
+3. Create `.env` file with:
+   MONGO_URI=<your-mongodb-uri>
+   JWT_SECRET=<your-jwt-secret>
    PORT=5000
-   ```
+4. Start server:
+   node server.js
 
-4. Start the server:
-   ```bash
-   npm run dev
-   ```
-   Server will run on: `http://localhost:5000`
+Server runs at `http://localhost:5000`
 
----
+## Notes
 
-## 📌 API Endpoints
+- Use ObjectId of Teams when creating Matches
+- Uploaded logos are stored in `uploads/` folder
+- Pagination defaults: page=1, limit=10
 
-### 🔑 Authentication
-- **POST /api/auth/signup** → Register new user.  
-- **POST /api/auth/login** → Login and get JWT token.  
+## Author
 
-### 🏆 Teams
-- **POST /api/teams** → Add a new team.  
-- **GET /api/teams** → Get all teams.  
-- **GET /api/teams/:id** → Get single team.  
-- **PUT /api/teams/:id** → Update a team.  
-- **DELETE /api/teams/:id** → Delete a team.  
-- **POST /api/teams/:id/logo** → Upload team logo (Task 6).  
-
----
-
-## 📬 Example Request (Using Postman)
-
-### Signup
-```json
-POST http://localhost:5000/api/auth/signup
-{
-  "username": "admin",
-  "email": "admin@test.com",
-  "password": "123456",
-  "role": "admin"
-}
-```
-
-### Login
-```json
-POST http://localhost:5000/api/auth/login
-{
-  "email": "admin@test.com",
-  "password": "123456"
-}
-```
-
-Response:
-```json
-{
-  "token": "your_jwt_token"
-}
-```
-
-Use this token in headers for protected routes:
-```
-Authorization: Bearer <your_token>
-```
-
----
-
-## 🛠 Technologies Used
-- **Node.js**
-- **Express**
-- **MongoDB + Mongoose**
-- **JWT (jsonwebtoken)**
-- **bcryptjs**
-- **multer**
-- **dotenv**
-
----
-
-## 🎥 Video Explanation
-A full walkthrough video (5–6 minutes) has been recorded to explain:
-- Project structure
-- Authentication flow
-- Protected routes
-- File upload (team logo)
-
-
+AbdUlrahman Elsayed
