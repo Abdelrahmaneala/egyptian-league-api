@@ -4,14 +4,12 @@ const Team = require("../models/Team");
 
 const router = express.Router();
 
-// Multer setup
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "uploads/"),
   filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname),
 });
 const upload = multer({ storage });
 
-// ✅ Create Team
 router.post("/", async (req, res) => {
   try {
     const team = new Team(req.body);
@@ -22,7 +20,6 @@ router.post("/", async (req, res) => {
   }
 });
 
-// ✅ Get All Teams (with pagination)
 router.get("/", async (req, res) => {
   try {
     const { page = 1, limit = 10 } = req.query;
@@ -35,7 +32,6 @@ router.get("/", async (req, res) => {
   }
 });
 
-// ✅ Update Team
 router.put("/:id", async (req, res) => {
   try {
     const team = await Team.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -46,7 +42,6 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-// ✅ Delete Team
 router.delete("/:id", async (req, res) => {
   try {
     const team = await Team.findByIdAndDelete(req.params.id);
@@ -57,7 +52,6 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-// ✅ Upload Logo
 router.post("/:id/logo", upload.single("logo"), async (req, res) => {
   try {
     const team = await Team.findById(req.params.id);
