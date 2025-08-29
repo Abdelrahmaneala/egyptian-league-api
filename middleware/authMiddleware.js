@@ -1,4 +1,3 @@
-// middleware/authMiddleware.js
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { fail } = require('../utils/jsend');
@@ -14,7 +13,7 @@ module.exports = async (req, res, next) => {
     const user = await User.findById(decoded.id);
     if (!user) return res.status(401).json(fail({}, 'Unauthorized: user not found'));
 
-    req.user = user; // attach user to request
+    req.user = user; 
     next();
   } catch (err) {
     return res.status(401).json(fail({}, 'Unauthorized: Invalid or expired token'));
