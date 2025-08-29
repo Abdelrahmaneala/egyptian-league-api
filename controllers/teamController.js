@@ -1,6 +1,5 @@
 const Team = require("../models/Team");
 
-// Create Team
 exports.createTeam = async (req, res, next) => {
   try {
     const { name, city, stadium, foundedYear } = req.body;
@@ -18,7 +17,6 @@ exports.createTeam = async (req, res, next) => {
   }
 };
 
-// Get Teams (with pagination)
 exports.getTeams = async (req, res, next) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -32,7 +30,6 @@ exports.getTeams = async (req, res, next) => {
   }
 };
 
-// Update Team
 exports.updateTeam = async (req, res, next) => {
   try {
     const team = await Team.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -45,7 +42,6 @@ exports.updateTeam = async (req, res, next) => {
   }
 };
 
-// Delete Team
 exports.deleteTeam = async (req, res, next) => {
   try {
     const team = await Team.findByIdAndDelete(req.params.id);
