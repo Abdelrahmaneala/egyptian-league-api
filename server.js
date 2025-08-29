@@ -12,19 +12,16 @@ const authRoutes = require("./routes/authRoutes");
 dotenv.config();
 const app = express();
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Static folder to serve uploaded logos
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// Routes
 app.use("/api/teams", teamRoutes);
 app.use("/api/matches", matchRoutes);
 app.use("/api/auth", authRoutes);
 
-// Error Handling Middleware (JSend format)
+
 app.use((err, req, res, next) => {
   res.status(err.status || 500).json({
     status: "error",
@@ -36,5 +33,5 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 
 connectDB().then(() => {
-  app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 });
