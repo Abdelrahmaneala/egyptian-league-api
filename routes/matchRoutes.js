@@ -3,7 +3,6 @@ const Match = require("../models/Match");
 
 const router = express.Router();
 
-// ✅ Create Match
 router.post("/", async (req, res) => {
   try {
     const match = new Match(req.body);
@@ -14,7 +13,6 @@ router.post("/", async (req, res) => {
   }
 });
 
-// ✅ Get All Matches (with pagination)
 router.get("/", async (req, res) => {
   try {
     const { page = 1, limit = 10 } = req.query;
@@ -27,7 +25,6 @@ router.get("/", async (req, res) => {
   }
 });
 
-// ✅ Update Match
 router.put("/:id", async (req, res) => {
   try {
     const match = await Match.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -38,7 +35,6 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-// ✅ Delete Match
 router.delete("/:id", async (req, res) => {
   try {
     const match = await Match.findByIdAndDelete(req.params.id);
