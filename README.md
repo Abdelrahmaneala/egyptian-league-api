@@ -1,5 +1,7 @@
 # Egyptian League Management API
 
+**Author:** AbdUlrahman Elsayed
+
 RESTful API to manage Egyptian League football teams and matches.
 
 ## Features
@@ -19,7 +21,7 @@ Node.js, Express, MongoDB, Mongoose, JWT, Multer, CORS
 ## Installation
 
 1. Clone repository:
-   git clone <repo-url>
+   git clone https://github.com/Abdelrahmaneala/egyptian-league-api
 2. Install dependencies:
    npm install
 3. Create `.env` file with:
@@ -36,7 +38,4 @@ Server runs at `http://localhost:5000`
 - Use ObjectId of Teams when creating Matches
 - Uploaded logos are stored in `uploads/` folder
 - Pagination defaults: page=1, limit=10
-
-## Author
-
-AbdUlrahman Elsayed
+- This project was fully developed by **AbdUlrahman Elsayed**
