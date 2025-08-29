@@ -1,6 +1,5 @@
 const Match = require("../models/Match");
 
-// Create Match
 exports.createMatch = async (req, res, next) => {
   try {
     const { homeTeam, awayTeam, matchDate, score } = req.body;
@@ -18,7 +17,6 @@ exports.createMatch = async (req, res, next) => {
   }
 };
 
-// Get Matches (with pagination)
 exports.getMatches = async (req, res, next) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -32,7 +30,6 @@ exports.getMatches = async (req, res, next) => {
   }
 };
 
-// Update Match
 exports.updateMatch = async (req, res, next) => {
   try {
     const match = await Match.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -45,7 +42,6 @@ exports.updateMatch = async (req, res, next) => {
   }
 };
 
-// Delete Match
 exports.deleteMatch = async (req, res, next) => {
   try {
     const match = await Match.findByIdAndDelete(req.params.id);
